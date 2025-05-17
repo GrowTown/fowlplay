@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; 
@@ -52,12 +53,13 @@ public class AI_Manager : MonoBehaviour
         if (playerMoves.Count > 3)
             RemoveOldestPiece(playerMoves, 1);
 
-        if (TicTacToeHelper.CheckWin(board, 1))
+        List<Vector2Int> winPositions;
+        if (TicTacToeHelper.CheckWin(board, 1, out winPositions))
         {
             gameOver = true;
             UpdateStatus("You Win!");
-            UI_Manager.Instance.winPanel.SetActive(true);
-            UI_Manager.Instance.winningText.text = "You Win!";
+            TicTacToeHelper.HighlightWinningCells(winPositions, buttonGrid);
+            StartCoroutine(ShowPanelAfterDelay("You Win!"));
             return;
         }
 
@@ -92,12 +94,13 @@ public class AI_Manager : MonoBehaviour
         if (playerMoves.Count > 3)
             RemoveOldestPiece(playerMoves, 2);
 
-        if (TicTacToeHelper.CheckWin(board, 2))
+        List<Vector2Int> winPositions;
+        if (TicTacToeHelper.CheckWin(board, 2, out winPositions))
         {
             gameOver = true;
             UpdateStatus("AI Wins!");
-            UI_Manager.Instance.winPanel.SetActive(true);
-            UI_Manager.Instance.winningText.text = "AI Wins!";
+            TicTacToeHelper.HighlightWinningCells(winPositions, buttonGrid);
+            StartCoroutine(ShowPanelAfterDelay("AI Wins!"));
             return;
         }
 
@@ -105,6 +108,15 @@ public class AI_Manager : MonoBehaviour
         UpdateStatus("Your Turn");
         UI_Manager.Instance.chickenBG.SetActive(true);
         UI_Manager.Instance.duckBG.SetActive(false);
+    }
+
+
+    private IEnumerator ShowPanelAfterDelay(string winTx)
+    {
+        yield return new WaitForSeconds(1f);
+
+        UI_Manager.Instance.winPanel.SetActive(true);
+        UI_Manager.Instance.winningText.text = winTx;
     }
 
     private void RemoveOldestPiece(Queue<Vector2Int> moveQueue, int player)
@@ -131,6 +143,19 @@ public class AI_Manager : MonoBehaviour
         aiTurnCount = 0;
         gameOver = false;
         isPlayerTurn = true;
+        foreach (var btn in UI_Manager.Instance.gridButtons)
+        {
+            ColorBlock colors = btn.colors;
+            colors.normalColor = Color.white;
+            btn.colors = colors;
+            Image img = btn.GetComponent<Image>();
+            if (img != null)
+            {
+                Color imgColor = img.color;
+                imgColor.a = 0.5f;
+                img.color = imgColor;
+            }
+        }
 
         UpdateStatus("Your Turn");
         UI_Manager.Instance.chickenBG.SetActive(true);

@@ -8,32 +8,24 @@ using Unity.VisualScripting;
 
 public class MulitplayerGameManager : MonoBehaviourPunCallbacks
 {
-    public static MulitplayerGameManager instance;
+    //public static MulitplayerGameManager instance;
     [SerializeField] private TMP_InputField joinRoomField;
     [SerializeField] private TMP_Text generatedRoomCodeText;
+    [SerializeField] private TMP_Text forlobbyloadingText;
     [SerializeField] private GameObject roomIDCreatePanel;
     bool gameStarted = false;
 
     private const int RoomCodeLength = 6;
-   // private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+   
+    
+    //private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private const string Characters = "0123456789";
 
     private int retryAttempts = 0;
     private const int MaxRetryAttempts = 5;
     private string pendingRoomCode;
 
-    public void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-            //DontDestroyOnLoad(gameObject);
-        }
-    }
+
 
     private void Start()
     {
@@ -69,11 +61,18 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        SceneManager.LoadScene("Lobby");
+        joinedLobby = true;
+        //SceneManager.LoadScene("Lobby");
     }
 
     public void CreateRoom()
     {
+        if (!joinedLobby)
+        {
+            forlobbyloadingText.text = "Not in lobby yet. Wait before joining.";
+            Debug.LogWarning("Not in lobby yet. Wait before joining.");
+            return;
+        }
         TryCreateUniqueRoom();
     }
 
@@ -94,6 +93,7 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         {
             generatedRoomCodeText.text = "YourRoomID : " + pendingRoomCode;
             roomIDCreatePanel.SetActive(true);
+
         }
     }
 
@@ -127,12 +127,20 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         return builder.ToString();
     }
 
-
+    bool joinedLobby = false;
     public void JoinRoom()
     {
-        if (!string.IsNullOrEmpty(joinRoomField.text))
+        if (!joinedLobby)
         {
-            PhotonNetwork.JoinRoom(joinRoomField.text.ToUpper()); 
+            forlobbyloadingText.text = "Not in lobby yet. Wait before joining.";
+            Debug.LogWarning("Not in lobby yet. Wait before joining.");
+            return;
+        }
+
+        string code = joinRoomField.text.Trim();
+        if (!string.IsNullOrEmpty(code))
+        {
+            PhotonNetwork.JoinRoom(code);
         }
         else
         {
@@ -148,7 +156,8 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        Debug.LogWarning($"Join room failed: {message}");
+        
+        Debug.LogWarning($"Join room failed: {message}  {returnCode}");
         // You can display a UI message like "Room not found"
     }
 
