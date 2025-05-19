@@ -34,10 +34,9 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
 
         myPlayerNumber = PhotonNetwork.IsMasterClient ? 1 : 2;
         isMyTurn = myPlayerNumber == 1;
-
+        AssignBgForHighlightTheTurns(myPlayerNumber);
         UpdateStatus(isMyTurn ? "Your Turn" : "Opponent Turn");
-        UI_Manager.Instance.chickenBG.SetActive(isMyTurn);
-        UI_Manager.Instance.duckBG.SetActive(!isMyTurn);
+        
     }
 
     private void OnCellClicked(int row, int col)
@@ -91,8 +90,9 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
 
         board[row, col] = playerNumber;
 
-        GameObject piecePrefab = (playerNumber == 1) ? UI_Manager.Instance.chickenPrefab : UI_Manager.Instance.duckPrefab;
-        TicTacToeHelper.PlacePiece(row, col, piecePrefab, buttonGrid, pieceGrid);
+        /* GameObject piecePrefab = (playerNumber == 1) ? UI_Manager.Instance.chickenPrefab : UI_Manager.Instance.duckPrefab;
+         TicTacToeHelper.PlacePiece(row, col, piecePrefab, buttonGrid, pieceGrid);*/
+        TicTacToeHelper.PlacePiece(row, col, playerNumber, UI_Manager.Instance.chickenPrefab, UI_Manager.Instance.duckPrefab, UI_Manager.Instance.gridButtons, pieceGrid);
 
         if (playerNumber == myPlayerNumber)
         {
@@ -117,8 +117,7 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
         }
 
         isMyTurn = !isMyTurn;
-        UI_Manager.Instance.chickenBG.SetActive(isMyTurn);
-        UI_Manager.Instance.duckBG.SetActive(!isMyTurn);
+        AssignBgForHighlightTheTurns(myPlayerNumber);
         UpdateStatus(isMyTurn ? "Your Turn" : "Opponent Turn");
     }
 
@@ -217,6 +216,21 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
     {
         if (UI_Manager.Instance.statusText != null)
             UI_Manager.Instance.statusText.text = message;
+    }
+
+    private void AssignBgForHighlightTheTurns(int myPlayerNum)
+    {
+        if(myPlayerNum == 1)
+        {
+
+        UI_Manager.Instance.chickenBG.SetActive(true);
+        UI_Manager.Instance.duckBG.SetActive(false);
+        }
+        else
+        {
+            UI_Manager.Instance.chickenBG.SetActive(false);
+            UI_Manager.Instance.duckBG.SetActive(true);
+        }
     }
 }
 

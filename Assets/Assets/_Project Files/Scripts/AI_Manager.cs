@@ -91,8 +91,8 @@ public class AI_Manager : MonoBehaviour
         aiMoves.Enqueue(move);
         aiTurnCount++;
 
-        if (playerMoves.Count > 3)
-            RemoveOldestPiece(playerMoves, 2);
+        if (aiMoves.Count > 3)
+            RemoveOldestPiece(aiMoves, 2);
 
         List<Vector2Int> winPositions;
         if (TicTacToeHelper.CheckWin(board, 2, out winPositions))
