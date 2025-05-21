@@ -34,9 +34,16 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
 
         myPlayerNumber = PhotonNetwork.IsMasterClient ? 1 : 2;
         isMyTurn = myPlayerNumber == 1;
-        AssignBgForHighlightTheTurns(myPlayerNumber);
+        photonView.RPC("AssignBgForHighlightTheTurns", RpcTarget.All, myPlayerNumber);
         UpdateStatus(isMyTurn ? "Your Turn" : "Opponent Turn");
-        
+
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+        Debug.Log("Game is exiting...");
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
     private void OnCellClicked(int row, int col)
@@ -87,6 +94,7 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
     {
         if (board[row, col] != 0 || gameOver)
             return;
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.gridMusic, Audio_Manager.Instance.sfxVolume);
 
         board[row, col] = playerNumber;
 
@@ -98,7 +106,10 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
         {
             myMoves.Enqueue(new Vector2Int(row, col));
             if (myMoves.Count > 3)
-                RemoveOldestPiece();
+            {
+                Vector2Int oldestMove = myMoves.Dequeue();
+                photonView.RPC("RemovePieceAt", RpcTarget.All, oldestMove.x, oldestMove.y);
+            }
         }
 
         List<Vector2Int> winPositions;
@@ -117,7 +128,8 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
         }
 
         isMyTurn = !isMyTurn;
-        AssignBgForHighlightTheTurns(myPlayerNumber);
+        photonView.RPC("AssignBgForHighlightTheTurns", RpcTarget.All, playerNumber);
+
         UpdateStatus(isMyTurn ? "Your Turn" : "Opponent Turn");
     }
 
@@ -144,9 +156,9 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(1f);
 
+        UpdateStatus((winnerPlayerNumber == myPlayerNumber) ? "You Win!" : "Opponent Wins!");
         UI_Manager.Instance.winPanel.SetActive(true);
         UI_Manager.Instance.winningText.text = (winnerPlayerNumber == myPlayerNumber) ? "You Win!" : "Opponent Wins!";
-        UpdateStatus((winnerPlayerNumber == myPlayerNumber) ? "You Win!" : "Opponent Wins!");
     }
     private void HighlightWinningCells(List<Vector2Int> winningCells)
     {
@@ -166,30 +178,42 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private void RemoveOldestPiece()
+    [PunRPC]
+    private void RemovePieceAt(int row, int col)
     {
-        if (myMoves.Count == 0) return;
+        board[row, col] = 0;
 
-        Vector2Int oldMove = myMoves.Dequeue();
-        board[oldMove.x, oldMove.y] = 0;
-
-        if (pieceGrid[oldMove.x, oldMove.y] != null)
+        if (pieceGrid[row, col] != null)
         {
-            Destroy(pieceGrid[oldMove.x, oldMove.y].gameObject);
-            pieceGrid[oldMove.x, oldMove.y] = null;
+            Destroy(pieceGrid[row, col].gameObject);
+            pieceGrid[row, col] = null;
         }
     }
 
+    /* private void RemoveOldestPiece()
+     {
+         if (myMoves.Count == 0) return;
+
+         Vector2Int oldMove = myMoves.Dequeue();
+         board[oldMove.x, oldMove.y] = 0;
+
+         if (pieceGrid[oldMove.x, oldMove.y] != null)
+         {
+             Destroy(pieceGrid[oldMove.x, oldMove.y].gameObject);
+             pieceGrid[oldMove.x, oldMove.y] = null;
+         }
+     }*/
+
     public void RestartMultiplayerGame()
     {
-        photonView.RPC("ResetGame", RpcTarget.All);
+        photonView.RPC(methodName: "ResetGame", RpcTarget.All);
     }
 
     [PunRPC]
     public void ResetGame()
     {
         TicTacToeHelper.ResetGrid(board, pieceGrid, UI_Manager.Instance.gridButtons);
-
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         myMoves.Clear();
         gameOver = false;
         isMyTurn = myPlayerNumber == 1;
@@ -212,25 +236,39 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
         UI_Manager.Instance.duckBG.SetActive(!isMyTurn);
     }
 
-    private void UpdateStatus(string message)
-    {
-        if (UI_Manager.Instance.statusText != null)
-            UI_Manager.Instance.statusText.text = message;
-    }
-
+    [PunRPC]
     private void AssignBgForHighlightTheTurns(int myPlayerNum)
     {
-        if(myPlayerNum == 1)
+        if (!UI_Manager.Instance.duckBG.activeSelf&& !UI_Manager.Instance.chickenBG.activeSelf)
         {
-
-        UI_Manager.Instance.chickenBG.SetActive(true);
-        UI_Manager.Instance.duckBG.SetActive(false);
+            UI_Manager.Instance.chickenBG.SetActive(true);
+            UI_Manager.Instance.duckBG.SetActive(true);
+        }
+        if (myPlayerNum == 1)
+        {
+            var go=UI_Manager.Instance.chickenBG;
+            go.transform.GetChild(0).gameObject.SetActive(true);
+            UI_Manager.Instance.duckBG.transform.GetChild(0).gameObject.SetActive(false);
         }
         else
         {
-            UI_Manager.Instance.chickenBG.SetActive(false);
-            UI_Manager.Instance.duckBG.SetActive(true);
+            UI_Manager.Instance.chickenBG.transform.GetChild(0).gameObject.SetActive(false);
+            var go =UI_Manager.Instance.duckBG;
+            go.transform.GetChild(0).gameObject.SetActive(true);
         }
+    }
+    private void UpdateStatus(string message)
+    {
+        if (message == "You Win!")
+        {
+            Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.winMusic, Audio_Manager.Instance.sfxVolume);
+        }
+        if (message == "Opponent Wins!")
+        {
+            Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.loseMusic, Audio_Manager.Instance.sfxVolume);
+        }
+        if (UI_Manager.Instance.statusText != null)
+            UI_Manager.Instance.statusText.text = message;
     }
 }
 

@@ -18,8 +18,8 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
     private const int RoomCodeLength = 6;
    
     
-    //private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private const string Characters = "0123456789";
+    private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    //private const string Characters = "0123456789";
 
     private int retryAttempts = 0;
     private const int MaxRetryAttempts = 5;
@@ -67,6 +67,7 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         if (!joinedLobby)
         {
             forlobbyloadingText.text = "Not in lobby yet. Wait before joining.";
@@ -75,7 +76,12 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         }
         TryCreateUniqueRoom();
     }
-
+    public void ExitGame()
+    {
+        Application.Quit();
+        Debug.Log("Game is exiting...");
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
+    }
     private void TryCreateUniqueRoom()
     {
         pendingRoomCode = GenerateUniqueRoomCode();
@@ -130,6 +136,7 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
     bool joinedLobby = false;
     public void JoinRoom()
     {
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         if (!joinedLobby)
         {
             forlobbyloadingText.text = "Not in lobby yet. Wait before joining.";
@@ -137,7 +144,7 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        string code = joinRoomField.text.Trim();
+        string code = joinRoomField.text.Trim().ToUpper();
         if (!string.IsNullOrEmpty(code))
         {
             PhotonNetwork.JoinRoom(code);
@@ -154,17 +161,38 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         //SceneManager.LoadScene("FowlPlay_Game");
     }
 
+    /*  public override void OnJoinRoomFailed(short returnCode, string message)
+      {
+
+          Debug.LogWarning($"Join room failed: {message}  {returnCode}");
+          // You can display a UI message like "Room not found"
+      }
+  */
+
+    public TMP_Text errorText;
+
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        
         Debug.LogWarning($"Join room failed: {message}  {returnCode}");
-        // You can display a UI message like "Room not found"
-    }
 
+        switch (returnCode)
+        {
+            case 32758:
+                forlobbyloadingText.text = "Room does not exist. Please check the code.";
+                break;
+            case 32764:
+                forlobbyloadingText.text = "Room is full. Try a different one.";
+                break;
+            default:
+                forlobbyloadingText.text = $"Join failed: {message}  {returnCode}";
+                break;
+        }
+    }
     public void CopyRoomCodeToClipboard()
     {
         GUIUtility.systemCopyBuffer = PhotonNetwork.CurrentRoom.Name;
         Debug.Log("Room Code copied: " + PhotonNetwork.CurrentRoom.Name);
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 }
 

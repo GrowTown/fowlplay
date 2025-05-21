@@ -66,6 +66,9 @@ MonoBehaviour:
   - RestartGameRPC
   - EndGameRPC
   - ShowWinPanel
+  - AssignBgForHighlightTheTurns
+  - RemoveOldestPiece
+  - RemovePieceAt
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

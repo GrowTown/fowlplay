@@ -34,16 +34,19 @@ public class GameManager : MonoBehaviour
     public void AIGamePlayScene()
     {
         SceneManager.LoadScene("AI_GamePlay");
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
     public void MultiPlayerGameScene()
     {
         SceneManager.LoadScene("Lobby");
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
     public void ExitGame()
     {
         Application.Quit();
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         Debug.Log("Game is exiting...");
     }
 

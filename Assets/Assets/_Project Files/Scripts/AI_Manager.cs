@@ -29,7 +29,10 @@ public class AI_Manager : MonoBehaviour
         {
             int row = i / 3;
             int col = i % 3;
-            buttonGrid[row, col].onClick.AddListener(() => OnPlayerMove(row, col));
+            buttonGrid[row, col].onClick.AddListener(() => { 
+                OnPlayerMove(row, col);
+                Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.gridMusic, Audio_Manager.Instance.sfxVolume);
+            });
         }
 
         // Hook up restart button
@@ -40,6 +43,12 @@ public class AI_Manager : MonoBehaviour
         UI_Manager.Instance.chickenBG.SetActive(true);
     }
 
+    public void ExitGame()
+    {
+        Application.Quit();
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
+        Debug.Log("Game is exiting...");
+    }
     private void OnPlayerMove(int row, int col)
     {
         if (!isPlayerTurn || gameOver || board[row, col] != 0)
@@ -117,6 +126,7 @@ public class AI_Manager : MonoBehaviour
 
         UI_Manager.Instance.winPanel.SetActive(true);
         UI_Manager.Instance.winningText.text = winTx;
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.winMusic, Audio_Manager.Instance.sfxVolume);
     }
 
     private void RemoveOldestPiece(Queue<Vector2Int> moveQueue, int player)
@@ -135,6 +145,7 @@ public class AI_Manager : MonoBehaviour
 
     public void ResetGame()
     {
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         TicTacToeHelper.ResetGrid(board, pieceGrid, UI_Manager.Instance.gridButtons);
 
         playerMoves.Clear();
