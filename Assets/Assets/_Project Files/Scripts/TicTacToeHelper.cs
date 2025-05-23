@@ -20,6 +20,14 @@ public static class TicTacToeHelper
     public static void PlacePiece(int row, int col, int player, GameObject chickenPrefab, GameObject duckPrefab, Button[] gridButtons, Transform[,] pieceGrid)
     {
         Vector3 spawnPosition = gridButtons[row * 3 + col].transform.position;
+        Image img = gridButtons[row * 3 + col].GetComponent<Image>();
+
+        if (img != null)
+        {
+            Color imgColor = img.color;
+            imgColor.a = 1f;
+            img.color = imgColor;
+        }
         GameObject prefab = (player == 1) ? chickenPrefab : duckPrefab;
         GameObject piece = Object.Instantiate(prefab, spawnPosition, Quaternion.identity, gridButtons[row * 3 + col].transform);
         pieceGrid[row, col] = piece.transform;
@@ -168,18 +176,6 @@ public static class TicTacToeHelper
         return new Vector2Int(-1, -1);
     }
 
-   /* public static void HighlightWinningCells(List<Vector2Int> winningCells, Button[,] buttonGrid)
-    {
-        foreach (var pos in winningCells)
-        {
-            Button btn = buttonGrid[pos.x, pos.y];
-            ColorBlock colors = btn.colors;
-            colors.normalColor = Color.green;
-            btn.colors = colors;
-            var Img = btn.GetComponent<Image>().color;
-            Img.a = 1f;
-        }
-    }*/
 
     public static void HighlightWinningCells(List<Vector2Int> winningCells, Button[,] buttonGrid)
     {
