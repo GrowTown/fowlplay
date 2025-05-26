@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public bool isFirstPlayer = true;
     public GameObject waitingPanel;
     public GameObject EndPanel;
+    public GameObject LoadingPanel;
+    public GameObject LoadingPanelParent;
     public TileManager[] tileManagerList;
     public int turnCount = 0;
     public Sprite spriteX;
@@ -33,13 +35,19 @@ public class GameManager : MonoBehaviour
 
     public void AIGamePlayScene()
     {
-        SceneManager.LoadScene("AI_GamePlay");
+        GameObject screen = Instantiate(LoadingPanel, LoadingPanelParent.transform);
+        LoadingScreenController loader = screen.GetComponent<LoadingScreenController>();
+        loader.StartLoading("AI_GamePlay");
+        //SceneManager.LoadScene("AI_GamePlay");
         Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
     public void MultiPlayerGameScene()
     {
-        SceneManager.LoadScene("Lobby");
+        //SceneManager.LoadScene("Lobby");
+        GameObject screen = Instantiate(LoadingPanel, LoadingPanelParent.transform);
+        LoadingScreenController loader = screen.GetComponent<LoadingScreenController>();
+        loader.StartLoading("Lobby");
         Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 

@@ -4,7 +4,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
+
 
 public class MulitplayerGameManager : MonoBehaviourPunCallbacks
 {
@@ -193,6 +193,20 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         GUIUtility.systemCopyBuffer = PhotonNetwork.CurrentRoom.Name;
         Debug.Log("Room Code copied: " + PhotonNetwork.CurrentRoom.Name);
         Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
+    }
+
+    //public string roomID = pendingRoomCode;
+
+    public void ShareRoom()
+    {
+        string message = $"Join my room in FowlPlay! Room ID: {pendingRoomCode}";
+        GetComponent<NativeShare>().roomID = message; // Set your room ID
+        GetComponent<NativeShare>().ShareRoomID();
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
+        /* new NativeShare()
+             .SetText(message)
+             .SetSubject("FowlPlay - Room Invite")
+             .Share(); // This opens the native share dialog*/
     }
 }
 
