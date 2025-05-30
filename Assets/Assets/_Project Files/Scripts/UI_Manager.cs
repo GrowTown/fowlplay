@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 public class UI_Manager : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class UI_Manager : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -51,6 +52,11 @@ public class UI_Manager : MonoBehaviour
             Button btn = buttonObj.GetComponent<Button>();
             gridButtons[i] = btn;
         }
+    }
+
+    public void GoBackToMainMenu()
+    {
+        SceneManager.LoadScene("SampleScene");
     }
 }
 

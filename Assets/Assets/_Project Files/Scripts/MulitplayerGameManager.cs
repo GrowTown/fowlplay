@@ -195,7 +195,10 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
- 
+    public void GoBackToMainMenu()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
 
     public void ShareRoom()
     {
