@@ -19,6 +19,7 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         UI_Manager.Instance.CreateGridButtons();
+        UI_Manager.Instance.restartButton.onClick.AddListener(() => {GoogleAdsManager.Instance.OnGameFinished(GoogleAdsManager.GameMode.Multiplayer); });
         TicTacToeHelper.InitializeGrid(UI_Manager.Instance.gridButtons, out buttonGrid);
 
         for (int i = 0; i < UI_Manager.Instance.gridButtons.Length; i++)

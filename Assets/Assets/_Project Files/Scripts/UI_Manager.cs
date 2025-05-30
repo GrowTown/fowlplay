@@ -21,6 +21,7 @@ public class UI_Manager : MonoBehaviour
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI winningText;
     public Button restartButton;
+
     public GameObject chickenBG;
     public GameObject duckBG;
     public GameObject winPanel;

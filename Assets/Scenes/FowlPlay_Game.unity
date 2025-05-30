@@ -3376,7 +3376,7 @@ MonoBehaviour:
   gridParent: {fileID: 670617413}
   statusText: {fileID: 1173118746}
   winningText: {fileID: 1587430638}
-  restartButton: {fileID: 929131563}
+  restartButton: {fileID: 438864561}
   chickenBG: {fileID: 1464037252}
   duckBG: {fileID: 1184893651}
   winPanel: {fileID: 1878408697}
@@ -5200,7 +5200,7 @@ MonoBehaviour:
   m_margin: {x: 1.127182, y: 0, z: -0.143898, w: -0.27152157}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1625495680

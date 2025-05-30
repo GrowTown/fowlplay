@@ -195,14 +195,14 @@ public class MulitplayerGameManager : MonoBehaviourPunCallbacks
         Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
     }
 
-    //public string roomID = pendingRoomCode;
+ 
 
     public void ShareRoom()
     {
-        string message = $"Join my room in FowlPlay! Room ID: {pendingRoomCode}";
+        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
+        string message = $"Room ID: {pendingRoomCode}";
         GetComponent<NativeShare>().roomID = message; // Set your room ID
         GetComponent<NativeShare>().ShareRoomID();
-        Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.buttonclick, Audio_Manager.Instance.sfxVolume);
         /* new NativeShare()
              .SetText(message)
              .SetSubject("FowlPlay - Room Invite")

@@ -19,6 +19,8 @@ public class AI_Manager : MonoBehaviour
 
     private bool isPlayerTurn = true;
     private bool gameOver = false;
+    [SerializeField]
+    Button reloadGame;
 
     private void Start()
     {
@@ -34,6 +36,8 @@ public class AI_Manager : MonoBehaviour
                 Audio_Manager.Instance.PlayMusic(Audio_Manager.Instance.gridMusic, Audio_Manager.Instance.sfxVolume);
             });
         }
+
+        reloadGame.onClick.AddListener(() => { GoogleAdsManager.Instance.OnGameFinished(GoogleAdsManager.GameMode.AI); });
 
         // Hook up restart button
         if (UI_Manager.Instance.restartButton != null)
