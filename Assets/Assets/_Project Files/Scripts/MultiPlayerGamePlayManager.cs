@@ -35,7 +35,7 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
 
         myPlayerNumber = PhotonNetwork.IsMasterClient ? 1 : 2;
         isMyTurn = myPlayerNumber == 1;
-        photonView.RPC("AssignBgForHighlightTheTurns", RpcTarget.All, myPlayerNumber);
+        photonView.RPC("InstantiateTurnIcon", RpcTarget.All);
         UpdateStatus(isMyTurn ? "Your Turn" : "Opponent Turn");
 
     }
@@ -238,13 +238,19 @@ public class MultiPlayerGamePlayManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void AssignBgForHighlightTheTurns(int myPlayerNum)
+    private void InstantiateTurnIcon()
     {
-        if (!UI_Manager.Instance.duckBG.activeSelf&& !UI_Manager.Instance.chickenBG.activeSelf)
+        if (!UI_Manager.Instance.duckBG.activeSelf && !UI_Manager.Instance.chickenBG.activeSelf)
         {
             UI_Manager.Instance.chickenBG.SetActive(true);
             UI_Manager.Instance.duckBG.SetActive(true);
         }
+    }
+
+    [PunRPC]
+    private void AssignBgForHighlightTheTurns(int myPlayerNum)
+    {
+       
         if (myPlayerNum == 1)
         {
             var go=UI_Manager.Instance.chickenBG;
